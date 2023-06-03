@@ -1,10 +1,10 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const cities = require('./cities');
 const { places, descriptors } = require('./seedHelpers');
 const Campground = require('../models/campground');
-require('dotenv').config();
 
-mongoose.connect(process.env.dbConnection, {
+mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp", {
     useNewUrlParser: true,
     //useCreateIndex: true,
     useUnifiedTopology: true
