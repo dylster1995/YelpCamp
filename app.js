@@ -9,7 +9,8 @@ const ejsMate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
 require('dotenv').config();
-const { campgroundSchema } = require('./schemas');
+const { campgroundSchema, reviewSchema } = require('./schemas');
+const Review = require('./models/review');
 console.log(process.env.DB_CONNECTION)
 mongoose.connect(process.env.DB_CONNECTION, {
     useNewUrlParser: true,
@@ -40,6 +41,15 @@ const validateCampground = (req, res, next) => {
     }
     next();
 }
+const validateReview = (req, res, next) => {
+    const result = reviewSchema.validate(req.body);
+    const {error} = result;
+    if (error){
+        const msg = error.details.map(el => el.message).join(',');
+        throw new ExpressError(msg, 400);
+    }
+    next();
+}
 
 app.get('/', (req, res) => {
     res.render('landingpage');
@@ -54,7 +64,7 @@ app.get('/campgrounds/new', (req, res) => {
 });
 app.get('/campgrounds/:id', catchAsync(async (req, res, next) => {
         const { id } = req.params;
-        const campgrounds = await Campground.findById(id);
+        const campgrounds = await Campground.findById(id).populate('reviews');
 
         res.render('campgrounds/show', { campgrounds });
 }));
@@ -88,9 +98,25 @@ app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
 
     res.redirect(`/campgrounds`);
 }));
+app.post('/campgrounds/:id/reviews', validateReview, catchAsync(async(req,res) => {
+    const campground = await Campground.findById(req.params.id);
+    const review = new Review(req.body.review);
+    campground.reviews.push(review);
+    await review.save();
+    await campground.save();
+    res.redirect(`/campgrounds/${campground.id}`);
+}))
+app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    const campground = await Campground.findByIdAndUpdate( id, { $pull: { reviews: reviewId }});
+    const review = await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/campgrounds/${id}`);
+}))
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page Not Found', 404));
 })
+
+
 
 app.use((err, req, res, next) => {
     const { statusCode = 500 } = err;
