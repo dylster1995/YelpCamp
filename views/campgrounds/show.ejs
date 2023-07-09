@@ -3,20 +3,20 @@
     <div class="row">
         <div class="col-6">
             <div class="card mb-3">
-                <img src="<%= campgrounds.image %>" alt="<%= campgrounds.description %>">
+                <img src="<%= campground.image %>" alt="<%= campground.description %>">
                 <div class="card-body">
-                  <h5 class="card-title"><%= campgrounds.title %></h5>
-                  <p class="card-text"><%= campgrounds.description %></p>
+                  <h5 class="card-title"><%= campground.title %></h5>
+                  <p class="card-text"><%= campground.description %></p>
                 </div>
                 <ul class="list-group list-group-flush">
-                  <li class="list-group-item text-muted"><%= campgrounds.location %></li>
-                  <li class="list-group-item">$<%= campgrounds.price %> per night</li>
+                  <li class="list-group-item text-muted"><%= campground.location %></li>
+                  <li class="list-group-item">$<%= campground.price %> per night</li>
                   <li class="list-group-item">Vestibulum at eros</li>
                 </ul>
                 <div class="card-body">
                     <a class="btn btn-primary" href="/campgrounds">Back</a>
-                    <a class="btn btn-warning" href="/campgrounds/<%= campgrounds.id %>/edit">Edit</a>
-                    <form class="d-inline" action="/campgrounds/<%= campgrounds.id %>?_method=DELETE" method="POST">
+                    <a class="btn btn-warning" href="/campgrounds/<%= campground.id %>/edit">Edit</a>
+                    <form class="d-inline" action="/campgrounds/<%= campground.id %>?_method=DELETE" method="POST">
                         <button class="btn btn-danger">Delete</button>
                     </form>
                 </div>
@@ -24,7 +24,7 @@
         </div>
         <div class="col-6">
           <h2>Leave a review</h2>
-              <form action="/campgrounds/<%= campgrounds.id %>/reviews" method="POST" class="mb-3 validated-form" novalidate>
+              <form action="/campgrounds/<%= campground.id %>/reviews" method="POST" class="mb-3 validated-form" novalidate>
                 <div class="mb-3">
                   <label class="form-label" for="rating">Rating</label>
                   <input type="range" min="1" max="5" id="rating" class="form-range" name="review[rating]">
@@ -36,12 +36,12 @@
               </div>
               <button class="btn btn-success">Submit</button>
             </form>
-            <% for(let review of campgrounds.reviews) { %>
+            <% for(let review of campground.reviews) { %>
             <div class="card mb-3">
               <div class="card-body">
                 <h5 class="card-title">Rating: <%= review.rating %></h5>
                 <p class="card-text">Review: <%= review.body %></p>
-                <form action="/campgrounds/<%= campgrounds.id %>/reviews/<%= review.id %>?_method=DELETE" method="POST">
+                <form action="/campgrounds/<%= campground.id %>/reviews/<%= review.id %>?_method=DELETE" method="POST">
                 <button class="btn btn-sm btn-danger">Delete</button>
               </form>
               </div>
