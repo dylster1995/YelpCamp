@@ -1,0 +1,6 @@
+.alert-dismissible {
+    display: inline-block;
+}
+p, h4 {
+    word-wrap: break-word;
+}
