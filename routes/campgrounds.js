@@ -1,22 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
-const ExpressError = require('../utils/ExpressError');
 const { Campground } = require('../models');
-const { campgroundSchema } = require('../schemas');
 const mongoose = require('mongoose');
-const { isLoggedIn } = require('../middleware');
+const { isLoggedIn, isAuthor, validateCampground } = require('../middleware');
 
-
-const validateCampground = (req, res, next) => {
-    const result = campgroundSchema.validate(req.body);
-    const {error} = result;
-    if (error){
-        const msg = error.details.map(el => el.message).join(',');
-        throw new ExpressError(msg, 400);
-    }
-    next();
-}
 
 router.get('/', catchAsync(async (req, res) => {
     const campgrounds = await Campground.find({});
@@ -29,7 +17,12 @@ router.get('/new', isLoggedIn, (req, res) => {
 router.get('/:id', catchAsync(async (req, res, next) => {
     try{
         const id = new mongoose.Types.ObjectId(req.params);
-        const campground = await Campground.findById(id).populate('reviews');
+        const campground = await Campground.findById(id).populate({
+            path: 'reviews',
+            populate: {
+                path:'author'
+            }
+            }).populate('author');
 
         if(!campground){
             req.flash('error', 'Cannot find that campground!');
@@ -41,21 +34,22 @@ router.get('/:id', catchAsync(async (req, res, next) => {
         res.redirect('/campgrounds');
     }
 }));
-router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
 
     res.render('campgrounds/edit', { campground });
 }));
 router.post('/', validateCampground, isLoggedIn, catchAsync(async (req, res, next) => {
-    
     const { title, price, description, location, image } = req.body.campground;
-    const campground = await Campground.create({ title, description, price, location, image });
+    const author = req.user._id;
+
+    const campground = await Campground.create({ title, description, price, location, image, author });
     
     req.flash('success', 'Successfully made a new campground');
     res.redirect(`/campgrounds/${campground.id}`);
 }));
-router.put('/:id', validateCampground, isLoggedIn, catchAsync(async (req, res, next) => {
+router.put('/:id', validateCampground, isLoggedIn, isAuthor, catchAsync(async (req, res, next) => {
     const { title, price, description, location, image } = req.body.campground;
     const { id } = req.params;
 
@@ -64,7 +58,7 @@ router.put('/:id', validateCampground, isLoggedIn, catchAsync(async (req, res, n
     req.flash('success', 'Successfully updated campground')
     res.redirect(`/campgrounds/${id}`);
 }));
-router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete( id );
 

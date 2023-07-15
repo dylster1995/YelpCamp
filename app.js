@@ -57,6 +57,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash());
 
 app.use((req, res, next) => {
+    res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
@@ -76,7 +77,8 @@ app.get('/', (req, res) => {
 });
 
 app.all('*', (req, res, next) => {
-    next(new ExpressError('Page Not Found', 404));
+    res.send('what the hell did you do?');
+    //next(new ExpressError('Page Not Found', 404));
 })
 
 app.use((err, req, res, next) => {
