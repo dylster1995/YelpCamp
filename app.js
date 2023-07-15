@@ -7,8 +7,11 @@ const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
 const ExpressError = require('./utils/ExpressError');
 const session = require('express-session');
-const { campgrounds, reviews } = require('./routes');
+const { campgrounds, reviews, users } = require('./routes');
 const flash = require('connect-flash');
+const passport = require('passport');
+const localStrategy = require('passport-local');
+const User = require('./models/user');
 require('dotenv').config();
 
 const sessionConfig = {
@@ -21,6 +24,7 @@ const sessionConfig = {
         httpOnly: true
     }
 }
+
 
 mongoose.connect(process.env.DB_CONNECTION, {
     useNewUrlParser: true,
@@ -38,23 +42,35 @@ app.engine('ejs', ejsMate);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// session must come before passport
+app.use(session(sessionConfig));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(morgan('tiny'));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session(sessionConfig));
 app.use(flash());
 
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
-})
+});
 
 app.use('/campgrounds', campgrounds);
 app.use('/campgrounds/:id/reviews', reviews);
+app.use('/', users);
 
+app.get('/fakeUser', async (req, res) => {
+    const user = new User({email:'dylan@gmail.com', username: 'password'});
+    const newUser = await User.register(user, 'password');
+    res.send(newUser);
+})
 app.get('/', (req, res) => {
     res.render('landingpage');
 });
