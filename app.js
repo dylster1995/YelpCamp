@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
-const ExpressError = require('./utils/ExpressError');
 const session = require('express-session');
 const { campgrounds, reviews, users } = require('./routes');
 const flash = require('connect-flash');
@@ -67,18 +66,12 @@ app.use('/campgrounds', campgrounds);
 app.use('/campgrounds/:id/reviews', reviews);
 app.use('/', users);
 
-app.get('/fakeUser', async (req, res) => {
-    const user = new User({email:'dylan@gmail.com', username: 'password'});
-    const newUser = await User.register(user, 'password');
-    res.send(newUser);
-})
 app.get('/', (req, res) => {
     res.render('landingpage');
 });
 
 app.all('*', (req, res, next) => {
-    res.send('what the hell did you do?');
-    //next(new ExpressError('Page Not Found', 404));
+    next(new ExpressError('Page Not Found', 404));
 })
 
 app.use((err, req, res, next) => {
