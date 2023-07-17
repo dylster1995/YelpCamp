@@ -1,5 +1,6 @@
 const { Campground } = require('../models');
 const mongoose = require('mongoose');
+const { cloudinary } = require('../cloudinary');
 
 module.exports.index = async (req, res) => {
     const campgrounds = await Campground.find({});
@@ -36,19 +37,26 @@ module.exports.renderEditForm = async (req, res) => {
     res.render('campgrounds/edit', { campground });
 }
 module.exports.postNew = async (req, res, next) => {
-    const { title, price, description, location, image } = req.body.campground;
-    const author = req.user._id;
-
-    const campground = await Campground.create({ title, description, price, location, image, author });
+    const campground = new Campground(req.body.campground);
+    await campground.save();
     
     req.flash('success', 'Successfully made a new campground');
     res.redirect(`/campgrounds/${campground.id}`);
 }
 module.exports.putEdit = async (req, res, next) => {
-    const { title, price, description, location, image } = req.body.campground;
+    const { title, price, description, location, images } = req.body.campground;
     const { id } = req.params;
+    const campground = await Campground.findByIdAndUpdate( id , { title, description, price, location, images });
+    const { deleteImages } = req.body;
 
-    const campgrounds = await Campground.findByIdAndUpdate( id , { title, description, price, location, image });
+    if(deleteImages){
+        for(let filename of deleteImages) {
+            // Delete images from cloudinary
+            await cloudinary.uploader.destroy(filename);
+        }
+        // Delete images from mongodb
+        await campground.updateOne({$pull: {images: {filename: {$in: req.body.deleteImages}}}})
+    }
 
     req.flash('success', 'Successfully updated campground')
     res.redirect(`/campgrounds/${id}`);

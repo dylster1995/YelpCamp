@@ -1,6 +1,7 @@
 const ExpressError = require('./utils/ExpressError');
 const { campgroundSchema, reviewSchema } = require('./schemas');
 const { Campground, Review } = require('./models');
+const mongoose = require('mongoose');
 
 module.exports.isLoggedIn = (req, res, next) => {
     if(req.isAuthenticated()){
@@ -36,7 +37,7 @@ module.exports.isAuthor = async (req, res, next) => {
         }
         next();
     } catch(e) {
-        next(e);
+        return next(e);
     }
 }
 module.exports.validateReview = (req, res, next) => {
@@ -55,6 +56,28 @@ module.exports.isReviewAuthor = async (req, res, next) => {
         if(!review.author.equals(req.user._id)){
             req.flash('error', 'You are not authorized to do that!');
             return res.redirect(`/campgrounds/${id}`);
+        }
+        next();
+    } catch(e) {
+        next(e);
+    }
+}
+module.exports.addCloudinaryToCampground = async (req, res, next) => {
+    try{
+        const { campground } = req.body;
+        const addImages = req.files.map(f => ({ url: f.path, filename: f.filename }));
+        if(req.params.id){
+            const { id } = req.params;
+            const foundCampground = await Campground.findById(id);
+            if(foundCampground){
+                campground.images = []
+                campground.images.push(...foundCampground.images);
+                campground.images.push(...addImages);
+            }
+        }
+         else {
+            campground.images = addImages;
+            campground.author = new mongoose.Types.ObjectId(req.user._id);
         }
         next();
     } catch(e) {
