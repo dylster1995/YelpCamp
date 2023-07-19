@@ -1,5 +1,5 @@
 const ExpressError = require('./utils/ExpressError');
-const { campgroundSchema, reviewSchema } = require('./schemas');
+const {  campgroundSchema, reviewSchema } = require('./schemas');
 const { Campground, Review } = require('./models');
 const mongoose = require('mongoose');
 
@@ -19,8 +19,9 @@ module.exports.saveReturnURL = (req, res, next) => {
     next();
 }
 module.exports.validateCampground = (req, res, next) => {
-    const result = campgroundSchema.validate(req.body);
-    const {error} = result;
+    // const result = campgroundSchema.validate(req.body);
+    // const {error} = result;
+    const { error } = campgroundSchema.validate(req.body);
     if (error){
         const msg = error.details.map(el => el.message).join(',');
         throw new ExpressError(msg, 400);
