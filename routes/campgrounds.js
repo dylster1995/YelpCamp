@@ -8,9 +8,9 @@ const upload = require('multer')({ storage });
 
 router.route('/')
     .get(catchAsync(campgrounds.index))
-    .post(//isLoggedIn,
-        //upload.array('images'),
-        //addCloudinaryToCampground,
+    .post(isLoggedIn,
+        upload.array('images'),
+        addCloudinaryToCampground,
         validateCampground, 
         catchAsync(campgrounds.postNew));
 router.get('/new', isLoggedIn, campgrounds.renderNewForm);

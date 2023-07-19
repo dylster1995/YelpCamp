@@ -12,6 +12,7 @@ const flash = require('connect-flash');
 const passport = require('passport');
 const localStrategy = require('passport-local');
 const User = require('./models/user');
+const mongoSanitize = require('express-mongo-sanitize');
 
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret',
@@ -53,6 +54,7 @@ app.use(methodOverride('_method'));
 app.use(morgan('tiny'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash());
+app.use(mongoSanitize());
 
 app.use((req, res, next) => {
     res.locals.currentUser = req.user;
@@ -66,6 +68,7 @@ app.use('/campgrounds/:id/reviews', reviews);
 app.use('/', users);
 
 app.get('/', (req, res) => {
+    console.log(req.query);
     res.render('landingpage');
 });
 

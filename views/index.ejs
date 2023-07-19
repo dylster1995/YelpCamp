@@ -22,5 +22,8 @@
             </div>
         </div>
     <% } %>
-
+    <script>    
+        const mbxToken = '<%- process.env.MAPBOX_TOKEN %>';
+        const campgrounds = { features: <%- JSON.stringify(campgrounds) %>}
+    </script>
     <script src="/javascripts/showClusterMap.js"></script>

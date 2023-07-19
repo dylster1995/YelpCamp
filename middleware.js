@@ -19,8 +19,6 @@ module.exports.saveReturnURL = (req, res, next) => {
     next();
 }
 module.exports.validateCampground = (req, res, next) => {
-    // const result = campgroundSchema.validate(req.body);
-    // const {error} = result;
     const { error } = campgroundSchema.validate(req.body);
     if (error){
         const msg = error.details.map(el => el.message).join(',');
@@ -45,7 +43,7 @@ module.exports.validateReview = (req, res, next) => {
     const result = reviewSchema.validate(req.body);
     const {error} = result;
     if (error){
-        const msg = error.details.map(el => el.message).join(',');
+        const msg = error.details[0].message;
         throw new ExpressError(msg, 400);
     }
     next();
