@@ -13,15 +13,18 @@ const passport = require('passport');
 const localStrategy = require('passport-local');
 const User = require('./models/user');
 const mongoSanitize = require('express-mongo-sanitize');
+const { helmet } = require('./middleware.js');
 
 const sessionConfig = {
+    name: 'sess',
     secret: 'thisshouldbeabettersecret',
     resave: false,
     saveUninitialized: true,
     cookie: {
         expires: Date.now() + 1000 * 60 * 60 *24 * 7,
         maxAge:1000 * 60 * 60 *24 * 7,
-        httpOnly: true
+        httpOnly: true,
+        //secure: true
     }
 }
 
@@ -54,6 +57,7 @@ app.use(methodOverride('_method'));
 app.use(morgan('tiny'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash());
+app.use(helmet);
 app.use(mongoSanitize());
 
 app.use((req, res, next) => {
@@ -68,8 +72,7 @@ app.use('/campgrounds/:id/reviews', reviews);
 app.use('/', users);
 
 app.get('/', (req, res) => {
-    console.log(req.query);
-    res.render('landingpage');
+    res.render('home');
 });
 
 app.all('*', (req, res, next) => {

@@ -18,7 +18,6 @@ module.exports.renderNewForm = (req, res) => {
     res.render('campgrounds/new');
 }
 module.exports.show = async (req, res, next) => {
-    try{
         const id = new mongoose.Types.ObjectId(req.params);
         const campground = await Campground.findById(id).populate({
             path: 'reviews',
@@ -32,10 +31,6 @@ module.exports.show = async (req, res, next) => {
             return res.redirect('/campgrounds');
         }
         res.render('campgrounds/show', { campground });
-    } catch (e) {
-        req.flash('error', 'Cannot find that campground!');
-        res.redirect('/campgrounds');
-    }
 }
 module.exports.renderEditForm = async (req, res) => {
     const { id } = req.params;

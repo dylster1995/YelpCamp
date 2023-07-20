@@ -4,3 +4,25 @@
 p, h4 {
     word-wrap: break-word;
 }
+body {
+    background-color: rgb(235, 235, 235);
+}
+.card .row {
+    background-color: rgb(245, 245, 245);
+}
+#map {
+    border: 2px solid silver;
+}
+#clusterMapPoint {
+    text-decoration: inherit;
+    color: inherit;
+    cursor: auto;
+}
+#clusterMapPoint:visited {
+    text-decoration: inherit;
+    color: inherit;
+    cursor: auto;
+}
+#clusterMapPoint:hover {
+    cursor: pointer;
+}

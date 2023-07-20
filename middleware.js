@@ -2,6 +2,24 @@ const ExpressError = require('./utils/ExpressError');
 const {  campgroundSchema, reviewSchema } = require('./schemas');
 const { Campground, Review } = require('./models');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+
+// URL resources for helmet
+const connectSrcUrls = [
+    "https://cdn.jsdelivr.net/",
+    "https://api.mapbox.com/",
+    "https://events.mapbox.com/",
+];
+const scriptSrcUrls = [
+    "https://cdn.jsdelivr.net/",
+    "https://api.mapbox.com/",
+
+];
+const styleSrcUrls = [
+    "https://cdn.jsdelivr.net/",
+    "https://api.mapbox.com/",
+];
+const fontSrcUrls = [];
 
 module.exports.isLoggedIn = (req, res, next) => {
     if(req.isAuthenticated()){
@@ -83,3 +101,23 @@ module.exports.addCloudinaryToCampground = async (req, res, next) => {
         next(e);
     }
 }
+
+
+
+module.exports.helmet = helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: [], 
+            connectSrc: ["'self'", ...connectSrcUrls],
+            scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+            styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+            workerSrc: ["'self'", "blob:"],
+            objectSrc: [],
+            imgSrc: [
+                "'self'",
+                "blob:",
+                "data:",
+                "https://res.cloudinary.com/dtvpeb2vq/",
+            ],
+            fontSrc: ["'self'", ...fontSrcUrls],
+        }
+});

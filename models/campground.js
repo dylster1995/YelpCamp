@@ -11,6 +11,12 @@ const ImageSchema = new Schema({
 ImageSchema.virtual('thumbnail').get(function() {
     return this.url.replace('/upload', '/upload/w_200');
 })
+ImageSchema.virtual('showPageImage').get(function() {
+    return this.url.replace('/upload', '/upload/w_600,h_400');
+})
+ImageSchema.virtual('cardImage').get(function() {
+    return this.url.replace('/upload', '/upload/w_500');
+})
 
 const CampgroundSchema = new Schema({
     title: String,
@@ -45,7 +51,7 @@ const CampgroundSchema = new Schema({
 });
 
 CampgroundSchema.virtual('properties.popUpMarkup').get(function() {
-    return `<strong><a href="/campgrounds/${this.id}">${this.title}</a></strong>`;
+    return `<strong><a id="clusterMapPoint" href="/campgrounds/${this.id}">${this.title}</a></strong>`;
 })
 
 CampgroundSchema.post('findOneAndDelete', async function(doc) {
