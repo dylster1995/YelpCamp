@@ -1,11 +1,11 @@
-require('dotenv').config();
+require('dotenv').config()
 const mongoose = require('mongoose');
 const cities = require('./cities');
 const { places, descriptors } = require('./seedHelpers');
 const { Campground, User, Review } = require('../models');
 const { names } = require('./names');
 
-mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp", {
+mongoose.connect(process.env.DB_CONNECTION, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
@@ -53,12 +53,8 @@ const seedDB = async () => {
             description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid, tenetur, saepe sunt quaerat totam illum commodi praesentium porro iure eligendi officia, temporibus hic iusto! Non nostrum quo expedita laborum nobis.',
             images: [
                 {
-                    url: 'https://res.cloudinary.com/dtvpeb2vq/image/upload/v1689846562/Defaults/bnnsldwa4gaxjsc1an2z.jpg',
-                    filename: "Defaults/bnnsldwa4gaxjsc1an2z"
-                },
-                {
-                    url: 'https://res.cloudinary.com/dtvpeb2vq/image/upload/v1689846561/Defaults/qu74mtdttu2iqscei4tx.jpg',
-                    filename: "Defaults/qu74mtdttu2iqscei4tx"
+                    url: process.env.DEFAULT_CAMPGROUND_IMAGE_URL,
+                    filename: process.env.DEFAULT_CAMPGROUND_IMAGE_FILENAME
                 }
             ]
         }).save();

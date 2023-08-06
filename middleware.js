@@ -6,20 +6,55 @@ const helmet = require('helmet');
 
 // URL resources for helmet
 const connectSrcUrls = [
+    "'self'",
     "https://cdn.jsdelivr.net/",
     "https://api.mapbox.com/",
     "https://events.mapbox.com/",
 ];
 const scriptSrcUrls = [
+    "'unsafe-inline'",
+    "'self'",
     "https://cdn.jsdelivr.net/",
     "https://api.mapbox.com/",
+    "https://stackpath.bootstrapcdn.com/",
 
 ];
 const styleSrcUrls = [
+    "'self'",
+    "'unsafe-inline'",
     "https://cdn.jsdelivr.net/",
     "https://api.mapbox.com/",
+    "https://stackpath.bootstrapcdn.com/",
 ];
-const fontSrcUrls = [];
+const fontSrcUrls = ["'self'"];
+const defaultSrcUrls = [];
+const workerSrcUrls = ["'self'", "blob:"];
+const objectSrcUrls = [];
+const imgSrcUrls = [
+    "'self'",
+    "blob:",
+    "data:",
+    "https://res.cloudinary.com/dtvpeb2vq/",
+];
+
+
+// const connectSrcUrls = [
+//     "https://cdn.jsdelivr.net/",
+//     "https://api.mapbox.com/",
+//     "https://events.mapbox.com/",
+// ];
+// const scriptSrcUrls = [
+//     "https://cdn.jsdelivr.net/",
+//     "https://api.mapbox.com/",
+//     "https://stackpath.bootstrapcdn.com/",
+
+// ];
+// const styleSrcUrls = [
+//     "https://cdn.jsdelivr.net/",
+//     "https://api.mapbox.com/",
+//     "https://stackpath.bootstrapcdn.com/",
+// ];
+// const fontSrcUrls = [];
 
 module.exports.isLoggedIn = (req, res, next) => {
     if(req.isAuthenticated()){
@@ -101,23 +136,33 @@ module.exports.addCloudinaryToCampground = async (req, res, next) => {
         next(e);
     }
 }
-
-
-
 module.exports.helmet = helmet.contentSecurityPolicy({
         directives: {
-            defaultSrc: [], 
-            connectSrc: ["'self'", ...connectSrcUrls],
-            scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
-            styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
-            workerSrc: ["'self'", "blob:"],
-            objectSrc: [],
-            imgSrc: [
-                "'self'",
-                "blob:",
-                "data:",
-                "https://res.cloudinary.com/dtvpeb2vq/",
-            ],
-            fontSrc: ["'self'", ...fontSrcUrls],
+            defaultSrc: defaultSrcUrls, 
+            connectSrc: connectSrcUrls,
+            scriptSrc: scriptSrcUrls,
+            styleSrc: styleSrcUrls,
+            workerSrc: workerSrcUrls,
+            objectSrc: objectSrcUrls,
+            imgSrc: imgSrcUrls,
+            fontSrc: fontSrcUrls,
         }
 });
+
+// module.exports.helmet = helmet.contentSecurityPolicy({
+//     directives: {
+//         defaultSrc: [], 
+//         connectSrc: ["'self'", ...connectSrcUrls],
+//         scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+//         styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+//         workerSrc: ["'self'", "blob:"],
+//         objectSrc: [],
+//         imgSrc: [
+//             "'self'",
+//             "blob:",
+//             "data:",
+//             "https://res.cloudinary.com/dtvpeb2vq/",
+//         ],
+//         fontSrc: ["'self'", ...fontSrcUrls],
+//     }
+// });

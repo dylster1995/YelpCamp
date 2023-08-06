@@ -17,7 +17,7 @@ const { helmet } = require('./middleware.js');
 
 const sessionConfig = {
     name: 'sess',
-    secret: 'thisshouldbeabettersecret',
+    secret: 'thisisatemporarysecret',
     resave: false,
     saveUninitialized: true,
     cookie: {
